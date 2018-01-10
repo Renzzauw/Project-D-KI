@@ -13,4 +13,5 @@
 
 
 def q2():
+    return 'a'
     "*** YOUR CODE HERE ***"
