@@ -76,10 +76,10 @@ def enhancedFeatureExtractorDigit(datum):
     ##
     """
     features =  basicFeatureExtractorDigit(datum)
+
     
+
     return features
-
-
 
 def basicFeatureExtractorPacman(state):
     """
