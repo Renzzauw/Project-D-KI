@@ -60,8 +60,24 @@ class MiraClassifier:
         datum is a counter from features to values for those features
         representing a vector of values.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        for c in Cgrid:
+            for iteration in range(self.max_iterations):
+                print "Starting iteration ", iteration, "..."
+                for i in range(len(trainingData)):
+                    f = trainingData[i]                          
+                    vectors = util.Counter()
+                    for l in self.legalLabels:
+                        vectors[l] = self.weights[l] * f
+                    y1 = vectors.argMax()
+                    y2 = trainingLabels[i]
+                    if y1 == y2:
+                        continue
+                    self.weights[y2] += f
+                    self.weights[y1] -= f
+                    tau = min(c, ((self.weights[y1] - self.weights[y2]) * f + 1.0) / (2.0 * (f * f)))
+                    for datum in f:
+                        self.weights[y2][datum] += f[datum] * tau   
+                        self.weights[y1][datum] -= f[datum] * tau
 
     def classify(self, data ):
         """

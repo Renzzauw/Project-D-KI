@@ -54,24 +54,16 @@ class PerceptronClassifier:
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
-                datum = trainingData[i]
-                            
+                datum = trainingData[i]                          
                 vectors = util.Counter()
                 for l in self.legalLabels:
                     vectors[l] = self.weights[l] * datum
                 y1 = vectors.argMax()
-
                 y2 = trainingLabels[i]
-
                 if y1 == y2:
                     continue
-
                 self.weights[y2] += datum
                 self.weights[y1] -= datum
-                
-
-                #"*** YOUR CODE HERE ***"
-                #util.raiseNotDefined()
 
     def classify(self, data ):
         """
