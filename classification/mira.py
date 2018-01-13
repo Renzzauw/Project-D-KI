@@ -60,21 +60,34 @@ class MiraClassifier:
         datum is a counter from features to values for those features
         representing a vector of values.
         """
+        # loop through all the c's in cGrid, used when calculating tau
         for c in Cgrid:
+            # loop through all the iterations
             for iteration in range(self.max_iterations):
                 print "Starting iteration ", iteration, "..."
+                # loop through all the trainingdata
                 for i in range(len(trainingData)):
+                    # get the current trainingdata as f
                     f = trainingData[i]                          
+                    # instantiate a counter                    
                     vectors = util.Counter()
+                    # foreach legal label
                     for l in self.legalLabels:
+                        # add the weigts * f to the counter
                         vectors[l] = self.weights[l] * f
+                    # get the argMax from the created counter
                     y1 = vectors.argMax()
+                    # get the label we want to compare to
                     y2 = trainingLabels[i]
+                    # if the y1 and y2 are equal to eachother, we do not need to change the weights, so continue to the next piece of data
                     if y1 == y2:
                         continue
+                    # else change the weights
                     self.weights[y2] += f
                     self.weights[y1] -= f
+                    # calculate the tau using the formula from the slides, using the c from cGrid here
                     tau = min(c, ((self.weights[y1] - self.weights[y2]) * f + 1.0) / (2.0 * (f * f)))
+                    # change the weights using tau, in a forloop because we want to change tha value for each key, and it is not possible to just multiply a counter by a value
                     for datum in f:
                         self.weights[y2][datum] += f[datum] * tau   
                         self.weights[y1][datum] -= f[datum] * tau

@@ -51,19 +51,29 @@ class PerceptronClassifier:
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
 
+        # loop through the iterations
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
+            # loop through all the trainingdata
             for i in range(len(trainingData)):
-                datum = trainingData[i]                          
+                # get the current trainingdata as f
+                f = trainingData[i]      
+                # instantiate a counter                    
                 vectors = util.Counter()
+                # foreach legal label
                 for l in self.legalLabels:
-                    vectors[l] = self.weights[l] * datum
+                    # add the weigts * f to the counter
+                    vectors[l] = self.weights[l] * f
+                # get the argMax from the created counter
                 y1 = vectors.argMax()
+                # get the label we want to compare to
                 y2 = trainingLabels[i]
+                # if the y1 and y2 are equal to eachother, we do not need to change the weights, so continue to the next piece of data
                 if y1 == y2:
                     continue
-                self.weights[y2] += datum
-                self.weights[y1] -= datum
+                # else change the weights
+                self.weights[y2] += f
+                self.weights[y1] -= f
 
     def classify(self, data ):
         """
