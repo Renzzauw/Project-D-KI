@@ -77,9 +77,12 @@ def enhancedFeatureExtractorDigit(datum):
     """
     features = basicFeatureExtractorDigit(datum)
 
+    # function that gets the neighbours of the given position
     def getNeighbours((x, y)):
         neighbours = []
+        # checks to see if the possible neighbour is outside the boundaries
         if x > 0:
+            # add the neighbour to the neighbourlist
             neighbours.append((x - 1, y))
         if x < DIGIT_DATUM_WIDTH:
             neighbours.append((x + 1, y))
@@ -193,26 +196,41 @@ def enhancedFeatureExtractorDigit(datum):
     """
 
     # floodfill
+    # keep a list of positions we have covered
     done = []
+    # create a stack and push the upper left most position
     s = util.Stack()
     s.push((0, 0))
 
+    # while the stack is not empty (there are still positions to cover)
     while not s.isEmpty():
+        # pop the first element
         pos = s.pop()
+        # if we have not covered it
         if not pos in done:
+            # add it to the done list
             done.append(pos)
+            # if the pixel on this position is turned off
             if features[pos] == 0:
+                # set it to 2 (new value)
                 features[pos] = 2
+                # get the neighbours and push them onto the stack if we have not covered it yet
                 neighbours = getNeighbours(pos)
                 for n in neighbours:
-                    s.push(n)
+                    if not n in done:
+                        s.push(n)
 
+    # loop through all the digits
     for y in range(DIGIT_DATUM_HEIGHT):
         for x in range(DIGIT_DATUM_WIDTH):
+            # change every 0 value to 1
             if features[(x, y)] == 0:
                 features[(x, y)] = 1
+            # after this, set every 2 value to 0
             if features[(x, y)] == 2:
                 features[(x, y)] = 0
+            # values that were 2 are pixels that are turned off, and are on the outside, there are not enclosed by 1's
+            # before changing the 2's to 0's, all the 0's in the features are enclosed by 1's, change these to 1's
 
     return features
 
@@ -254,9 +272,50 @@ def enhancedPacmanFeatures(state, action):
     For each state, this function is called with each legal action.
     It should return a counter with { <feature name> : <feature value>, ... }
     """
+    # create an empty counter for the features
     features = util.Counter()
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # generate the new state
+    newstate = state.generatePacmanSuccessor(action)
+    # get the old and new pacman positions
+    oldPacmanPos = state.getPacmanPosition()
+    newPacmanPos = newstate.getPacmanPosition()
+
+    # function for creating features
+    def createFeature(pacmanPos, loopList, closestKey, itemKey, countKey):
+        # only execute when there are items in the looplist, for example, do not add features for power capsules if there are none in the level
+        if (len(loopList)) > 0:
+            # create a list of all the lengths of the items to the pacmanPos and sort it
+            items = [util.manhattanDistance(pacmanPos, item) for item in loopList]
+            list.sort(items)
+            # get the first element as the closest and add it to the features
+            closest = items[0]
+            features[closestKey] = closest
+            # foreach item in the itemlist, add it to the features
+            for i in range(len(items)):
+                features[(itemKey, i)] = items[i]
+            # add the count of the itemlist
+            features[countKey] = len(items)
+
+    # create features for the food, ghosts, capsules and walls for the old and new state
+    createFeature(oldPacmanPos, state.getFood().asList(), "oldClosestFood", "oldFood", "oldFoodCount")
+    createFeature(newPacmanPos, newstate.getFood().asList(), "newClosestFood", "newFood", "newFoodCount")
+    createFeature(oldPacmanPos, state.getFood().asList(), "oldClosestGhost", "oldGhost", "oldGhostCount")
+    createFeature(newPacmanPos, newstate.getFood().asList(), "newClosestGhost", "newGhost", "newGhostCount")
+    createFeature(oldPacmanPos, state.getCapsules(), "oldClosestCapsule", "oldCapsule", "oldCapsuleCount")
+    createFeature(newPacmanPos, newstate.getCapsules(), "newClosestCapsule", "newCapsule", "newCapsuleCount")
+    createFeature(oldPacmanPos, state.getWalls().asList(), "oldClosestWall", "oldWall", "oldWallCount")
+    createFeature(newPacmanPos, newstate.getWalls().asList(), "newClosestWall", "newWall", "newWallCount")
+
+    # add features for win, lose and score for the old and new state
+    features["oldwin"] = state.isWin()
+    features["newwin"] = newstate.isWin()
+    features["oldlose"] = state.isLose()
+    features["newlose"] = newstate.isLose()
+    features["oldscore"] = state.getScore()
+    features["newscore"] = newstate.getScore()
+
+    # finally, return features
     return features
 
 
@@ -298,6 +357,7 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 
     # Put any code here...
     # Example of use:
+    """
     for i in range(len(guesses)):
         prediction = guesses[i]
         truth = testLabels[i]
@@ -308,6 +368,7 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
             print "Image: "
             print rawTestData[i]
             # break
+    """
 
 
 ## =====================
