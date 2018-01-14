@@ -41,7 +41,7 @@ class PerceptronClassifierPacman(PerceptronClassifier):
         return guesses
 
 
-    def train( self, trainingData, trainingLabels, validationData, validationLabels ):
+    def train(self, trainingData, trainingLabels, validationData, validationLabels):
         self.features = trainingData[0][0]['Stop'].keys() # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
@@ -49,5 +49,21 @@ class PerceptronClassifierPacman(PerceptronClassifier):
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
-                "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
+                # get the current trainingdata as f
+                f = trainingData[i]
+                # instantiate a counter
+                vectors = util.Counter()
+                # foreach move in the trainingdata
+                for l in f[1]:
+                    # add the weights * f to the counter
+                    vectors[l] = self.weights * f[0][l]
+                # get the argMax from the created counter
+                y1 = vectors.argMax()
+                # get the label we want to compare to
+                y2 = trainingLabels[i]
+                # if the y1 and y2 are equal to eachother, we do not need to change the weights, so continue to the next piece of data
+                if y1 == y2:
+                    continue
+                # else change the weights
+                self.weights += f[0][y2]
+                self.weights -= f[0][y1]
