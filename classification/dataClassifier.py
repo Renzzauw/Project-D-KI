@@ -300,8 +300,8 @@ def enhancedPacmanFeatures(state, action):
     # create features for the food, ghosts, capsules and walls for the old and new state
     createFeature(oldPacmanPos, state.getFood().asList(), "oldClosestFood", "oldFood", "oldFoodCount")
     createFeature(newPacmanPos, newstate.getFood().asList(), "newClosestFood", "newFood", "newFoodCount")
-    createFeature(oldPacmanPos, state.getFood().asList(), "oldClosestGhost", "oldGhost", "oldGhostCount")
-    createFeature(newPacmanPos, newstate.getFood().asList(), "newClosestGhost", "newGhost", "newGhostCount")
+    createFeature(oldPacmanPos, state.getGhostPositions(), "oldClosestGhost", "oldGhost", "oldGhostCount")
+    createFeature(newPacmanPos, newstate.getGhostPositions(), "newClosestGhost", "newGhost", "newGhostCount")
     createFeature(oldPacmanPos, state.getCapsules(), "oldClosestCapsule", "oldCapsule", "oldCapsuleCount")
     createFeature(newPacmanPos, newstate.getCapsules(), "newClosestCapsule", "newCapsule", "newCapsuleCount")
     createFeature(oldPacmanPos, state.getWalls().asList(), "oldClosestWall", "oldWall", "oldWallCount")

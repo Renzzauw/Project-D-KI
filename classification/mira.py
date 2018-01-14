@@ -107,4 +107,15 @@ class MiraClassifier:
             guesses.append(vectors.argMax())
         return guesses
 
-
+    def findHighWeightFeatures(self, label):
+        """
+        Returns a list of the 100 features with the greatest weight for some label
+        """
+        # get the weights
+        weights = self.weights[label]
+        # sort the keys on values
+        keys = sorted(weights, key=weights.get)
+        # keys are sorted from lowest to highest value, so reverse
+        list.reverse(keys)
+        # return the first 100 keys, so the 100 keys with the highest values
+        return keys[:100]

@@ -57,8 +57,8 @@ class PerceptronClassifier:
             # loop through all the trainingdata
             for i in range(len(trainingData)):
                 # get the current trainingdata as f
-                f = trainingData[i]      
-                # instantiate a counter                    
+                f = trainingData[i]
+                # instantiate a counter
                 vectors = util.Counter()
                 # foreach legal label
                 for l in self.legalLabels:
