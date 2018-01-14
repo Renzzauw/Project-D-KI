@@ -75,9 +75,144 @@ def enhancedFeatureExtractorDigit(datum):
 
     ##
     """
-    features =  basicFeatureExtractorDigit(datum)
+    features = basicFeatureExtractorDigit(datum)
 
-    
+    def getNeighbours((x, y)):
+        neighbours = []
+        if x > 0:
+            neighbours.append((x - 1, y))
+        if x < DIGIT_DATUM_WIDTH:
+            neighbours.append((x + 1, y))
+        if y > 0:
+            neighbours.append((x, y - 1))
+        if y < DIGIT_DATUM_HEIGHT:
+            neighbours.append((x, y + 1))
+        return neighbours
+
+    """
+    # gaten van 5 breed in x richting opvullen
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 0:
+                continue
+            emptySpaces = 1
+            for _x in range(x, DIGIT_DATUM_WIDTH):
+                if features[(_x, y)] == 1:
+                    emptySpaces += 1
+                else:
+                    break
+            if emptySpaces <= 5:
+                for __x in range(x, x + emptySpaces - 1):
+                    features[(__x, y)] = 2
+            x += emptySpaces - 1
+
+    # gaten van 5 breed opvullen in y richting
+    for x in range(DIGIT_DATUM_WIDTH):
+        for y in range(DIGIT_DATUM_HEIGHT):
+            if features[(x, y)] == 0:
+                continue
+            emptySpaces = 1
+            for _y in range(y, DIGIT_DATUM_HEIGHT):
+                if features[(x, _y)] == 1:
+                    emptySpaces += 1
+                else:
+                    break
+            if emptySpaces <= 5:
+                for __y in range(y, y + emptySpaces - 1):
+                    features[(x, __y)] = 2
+            y += emptySpaces - 1
+
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 2:
+                features[(x, y)] = 1
+    """
+
+    """
+    # gaten van 1 breed opvullen
+    for y in range(1, DIGIT_DATUM_HEIGHT - 1):
+        for x in range(1, DIGIT_DATUM_WIDTH - 1):
+            pos = (x, y)
+            if features[pos] == 0:
+                n = getNeighbours(pos)
+                if features[n[0]] == 1 and features[n[1]] == 1:
+                    features[pos] == 2
+                if features[n[2]] == 1 and features[n[3]] == 1:
+                    features[pos] == 2
+
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 2:
+                features[(x, y)] = 1
+    """
+
+    """
+    # pixels die aan staan zonder buren die aan staan uit zetten
+    for y in range(1, DIGIT_DATUM_HEIGHT - 1):
+        for x in range(1, DIGIT_DATUM_WIDTH - 1):
+            pos = (x, y)
+            if features[pos] == 1:
+                change = True
+                neighbours = getNeighbours(pos)
+                neighbours.append((x - 1, y - 1))
+                neighbours.append((x - 1, y + 1))
+                neighbours.append((x + 1, y - 1))
+                neighbours.append((x + 1, y + 1))
+                for n in neighbours:
+                    if features[n] == 1:
+                        change = False
+                        break
+                if change:
+                    features[pos] = 2
+
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 2:
+                features[(x, y)] = 0
+    """
+
+    """
+    # alle pixels om een pixel die aan staat aan zetten
+    for y in range(1, DIGIT_DATUM_HEIGHT - 1):
+        for x in range(1, DIGIT_DATUM_WIDTH - 1):
+            pos = (x, y)
+            if features[pos] == 1:
+                neighbours = getNeighbours(pos)
+                neighbours.append((x - 1, y - 1))
+                neighbours.append((x - 1, y + 1))
+                neighbours.append((x + 1, y - 1))
+                neighbours.append((x + 1, y + 1))
+                for n in neighbours:
+                    if features[n] == 0:
+                        features[n] = 2
+
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 2:
+                features[(x, y)] = 0
+    """
+
+    # floodfill
+    done = []
+    s = util.Stack()
+    s.push((0, 0))
+
+    while not s.isEmpty():
+        pos = s.pop()
+        if not pos in done:
+            done.append(pos)
+            if features[pos] == 0:
+                features[pos] = 2
+                neighbours = getNeighbours(pos)
+                for n in neighbours:
+                    s.push(n)
+
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 0:
+                features[(x, y)] = 1
+            if features[(x, y)] == 2:
+                features[(x, y)] = 0
 
     return features
 
@@ -163,16 +298,16 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 
     # Put any code here...
     # Example of use:
-    # for i in range(len(guesses)):
-    #     prediction = guesses[i]
-    #     truth = testLabels[i]
-    #     if (prediction != truth):
-    #         print "==================================="
-    #         print "Mistake on example %d" % i
-    #         print "Predicted %d; truth is %d" % (prediction, truth)
-    #         print "Image: "
-    #         print rawTestData[i]
-    #         break
+    for i in range(len(guesses)):
+        prediction = guesses[i]
+        truth = testLabels[i]
+        if (prediction != truth):
+            print "==================================="
+            print "Mistake on example %d" % i
+            print "Predicted %d; truth is %d" % (prediction, truth)
+            print "Image: "
+            print rawTestData[i]
+            # break
 
 
 ## =====================
