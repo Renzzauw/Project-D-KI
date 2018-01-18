@@ -195,6 +195,43 @@ def enhancedFeatureExtractorDigit(datum):
                 features[(x, y)] = 0
     """
 
+    """
+    # for every y, set the highest and lowest value of x where features[(x, y)] == 1
+    for y in range(DIGIT_DATUM_HEIGHT):
+        minX = 99999
+        maxX = -1
+        hasPixelInRow = False
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 1 | features[(x, y)] == 2:
+                minX = min(minX, x)
+                maxX = max(maxX, x)
+                hasPixelInRow = True
+        if hasPixelInRow:
+            #print "y = ", y, ", minX = ", minX, ", maxX = ", maxX
+            features[(minX, y)] = 2
+            features[(maxX, y)] = 2
+
+    # for every x, set the highest and lowest value of y where features[(x, y)] == 1
+    for x in range(DIGIT_DATUM_WIDTH):
+        minY = 99999
+        maxY = -1
+        hasPixelInRow = False
+        for y in range(DIGIT_DATUM_HEIGHT):
+            if features[(x, y)] == 1 | features[(x, y)] == 2:
+                minY = min(minY, y)
+                maxY = max(maxY, y)
+                hasPixelInRow = True
+        if hasPixelInRow:
+            #print "x = ", x, ", minY = ", minY, ", maxY = ", maxY
+            features[(x, minY)] = 2
+            features[(x, maxY)] = 2
+
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 2:
+                features[(x, y)] = 0
+    """
+
     # floodfill
     # keep a list of positions we have covered
     done = []
@@ -231,6 +268,38 @@ def enhancedFeatureExtractorDigit(datum):
                 features[(x, y)] = 0
             # values that were 2 are pixels that are turned off, and are on the outside, there are not enclosed by 1's
             # before changing the 2's to 0's, all the 0's in the features are enclosed by 1's, change these to 1's
+
+    """
+    # fill every pixel between the highest and lowest value of x
+    for y in range(DIGIT_DATUM_HEIGHT):
+        minX = 99999
+        maxX = -1
+        hasPixelInRow = False
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x, y)] == 1:
+                minX = min(minX, x)
+                maxX = max(maxX, x)
+                hasPixelInRow = True
+        if hasPixelInRow:
+            #print "y = ", y, ", minX = ", minX, ", maxX = ", maxX
+            for i in range(minX, maxX):
+                features[(i, y)] = 1
+
+    # fill every value between the highest and lowest value of y
+    for x in range(DIGIT_DATUM_WIDTH):
+        minY = 99999
+        maxY = -1
+        hasPixelInRow = False
+        for y in range(DIGIT_DATUM_HEIGHT):
+            if features[(x, y)] == 1:
+                minY = min(minY, y)
+                maxY = max(maxY, y)
+                hasPixelInRow = True
+        if hasPixelInRow:
+            #print "x = ", x, ", minY = ", minY, ", maxY = ", maxY
+            for i in range(minY, maxY):
+                features[(x, i)] = 1
+    """
 
     return features
 
