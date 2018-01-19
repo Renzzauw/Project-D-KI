@@ -72,7 +72,7 @@ def enhancedFeatureExtractorDigit(datum):
     for this datum (datum is of type samples.Datum).
 
     ## DESCRIBE YOUR ENHANCED FEATURES HERE...
-
+    We have used floodfill to fill every closed hole in the digit with a 1
     ##
     """
     features = basicFeatureExtractorDigit(datum)
@@ -196,7 +196,7 @@ def enhancedFeatureExtractorDigit(datum):
     """
 
     """
-    # for every y, set the highest and lowest value of x where features[(x, y)] == 1
+    # for every y, set the highest and lowest value of x where features[(x, y)] == 1 to 0
     for y in range(DIGIT_DATUM_HEIGHT):
         minX = 99999
         maxX = -1
@@ -211,7 +211,7 @@ def enhancedFeatureExtractorDigit(datum):
             features[(minX, y)] = 2
             features[(maxX, y)] = 2
 
-    # for every x, set the highest and lowest value of y where features[(x, y)] == 1
+    # for every x, set the highest and lowest value of y where features[(x, y)] == 1 to 0
     for x in range(DIGIT_DATUM_WIDTH):
         minY = 99999
         maxY = -1
