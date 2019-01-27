@@ -60,8 +60,11 @@ class MiraClassifier:
         datum is a counter from features to values for those features
         representing a vector of values.
         """
+        startWeights = self.weights.copy()
+        goeds = []
         # loop through all the c's in cGrid, used when calculating tau
         for c in Cgrid:
+            self.weights = startWeights
             # loop through all the iterations
             for iteration in range(self.max_iterations):
                 print "Starting iteration ", iteration, "..."
@@ -91,6 +94,17 @@ class MiraClassifier:
                     for datum in f:
                         self.weights[y2][datum] += f[datum] * tau   
                         self.weights[y1][datum] -= f[datum] * tau
+
+            aantalGoed = 0            
+            guesses = self.classify(validationData)
+            for i in range(len(guesses)):
+                if guesses[i] == validationLabels[i]:
+                    aantalGoed += 1
+            goeds.append(aantalGoed)
+
+        return Cgrid[goeds.index(max(goeds))]
+
+
 
     def classify(self, data ):
         """
